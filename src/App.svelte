@@ -1,5 +1,4 @@
 <script>
-  import { onMount } from "svelte";
   import Form from "@svelteschool/svelte-forms";
   import { Accordion, AccordionItem } from 'svelte-collapsible';
 

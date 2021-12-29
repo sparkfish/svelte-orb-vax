@@ -36,14 +36,16 @@
 <main>
   <center>
     <img src="https://github.com/sparkfish/orbitron/raw/dev/orbitron.svg" style='max-width:30%;' align='middle' alt='The Orbitron logo'>
-    <h2>Fill out the form below to see vaccine clinics in the area:<h2>
+    <h2>Enter a ZIP code and number of results below to see vaccine clinics in the area.<h2>
+	<h3> Click to expand results. </h3>
 	<Form>
 	  <fieldset>
 	    <input
-	      placeholder="your ZIP code"
+	      placeholder="ZIP code"
 	      type="text"
 	      name="zipcode"
 	      bind:value={zipcode}/>
+	    <br>
 	    <input
 	      placeholder="number of clinics"
 	      type="number"
@@ -53,7 +55,7 @@
 	</Form>
 
 	<button type="submit" on:click={handleSubmit(zipcode)}>
-	  Search clinics near {zipcode ? zipcode : "me"}
+	  Find {numclinics ? numclinics : ""} {numclinics == 1 ? "clinic" : "clinics"} near {zipcode ? zipcode : "me"}
 	</button>
 
 	{ #if apiData.length > 0 }
@@ -63,6 +65,8 @@
 	      <div slot='header' class='header'>
 		<div>
 		  <h2>{ item.name }</h2>
+		  <br>
+		  <h3>{ item.phone }</h3>
 		</div>
 	      </div>
 	      <p slot='body' class='body'>
@@ -73,8 +77,6 @@
 		{ item.city }, { item.state }
 		<br>
 		{ item.zip }
-		<br><br>
-		{ item.phone }
 	      </p>
 	    </AccordionItem>
 	    { /each }
@@ -110,25 +112,19 @@ fieldset {
   padding: 0.5em;
 }
 
-.header > img {
-  margin-right: 1em;
-  border-radius: 5px;
-}
-
 .header h2 {
   margin: 0;
   padding: 0;
+  font-size: 1em;
 }
 
-/* .header p { */
-/*   font-size: 1.8rem; */
-/*   margin: 0; */
-/* } */
-
+.header h3 {
+  font-size: 0.8em;
+}
 .body {
   padding: 0.5em;
   margin: 0;
-  font-size: 1.8rem;
+  font-size: 0.8rem;
 }
 
 </style>

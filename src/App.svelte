@@ -1,21 +1,32 @@
 <script>
   import Form from "@svelteschool/svelte-forms";
   import { Accordion, AccordionItem } from 'svelte-collapsible';
+  import { prevent_default } from "svelte/internal";
   import { writable } from "svelte/store";
 
   let zipcode = "";
 
-  let numclinics = 10;
+  let numclinics = 35;
 
   let apiData = [];
 
   let filteredData = [];
 
+  let timeout;
+
+  function scrollFunc() {
+	window.scrollBy({
+		top: 600,
+		left: 0,
+		behavior: 'smooth'
+	});
+  }
+
   async function handleSubmit(zipcode) {
     let url1 = "https://orbitron-dev.azurewebsites.net/nearest/";
     let url2 = "/clinics/to/";
 
-    let endpoint = url1.concat(20).concat(url2).concat(zipcode);
+    let endpoint = url1.concat(numclinics).concat(url2).concat(zipcode);
 
     let headers = new Headers();
     headers.append("Content-Type", "Application/Json");
@@ -38,13 +49,15 @@
 	[item[key], item])).values()];
 
 	filteredData = arrayUniqueByKey;
+
+	timeout = setTimeout(scrollFunc, 100);
   }
 
   async function loadMore(zipcode) {
     let url1 = "https://orbitron-dev.azurewebsites.net/nearest/";
     let url2 = "/clinics/to/";
 
-    let endpoint = url1.concat(20).concat(url2).concat(zipcode);
+    let endpoint = url1.concat(numclinics += 30).concat(url2).concat(zipcode);
 
     let headers = new Headers();
     headers.append("Content-Type", "Application/Json");
@@ -67,6 +80,8 @@
 	[item[key], item])).values()];
 
 	filteredData = arrayUniqueByKey;
+
+	timeout = setTimeout(scrollFunc, 100);
   }
 
 </script>
@@ -131,7 +146,7 @@
 		<div class="hero-left">
 			<div class="hero-left-text">
 				<h1 class="hero-left-text-title">Covid-19 Vaccine Finder</h1>
-				<h3 class="hero-left-text-info">Find a location near you, then call or visit their website to make an appointment.</h3>
+				<h3 class="hero-left-text-info">Find a location near you, then call or visit their store to make an appointment.</h3>
 			</div>
 			<p class="hero-sponsor">Powered by <span class="hero-sponsor-name">Orbitron</span></p>
 		</div>
@@ -141,15 +156,15 @@
 	</div>
 	<div class="form">
 		<h2 class="form-title">Search for a clinic near you</h2>
-		<Form>
+		<form on:submit|preventDefault={handleSubmit(zipcode)}>
 			<input
 			class="form-input"
 			placeholder="ZIP code"
 			type="text"
 			name="zipcode"
 			bind:value={zipcode}/>
-		</Form>
-		<button class="form-button" type="submit" on:click={handleSubmit(zipcode)}>
+		</form>
+		<button class="form-button" alt="Search" type="submit" on:click|preventDefault={handleSubmit(zipcode)}>
 			Search
 		</button>
 	</div>
@@ -171,8 +186,8 @@
 			{ /each }
 			{ /if }
 		</ol>
-		{ #if filteredData.length > 10 }
-			<button class="load-more" id="load-more" type="submit" on:click={loadMore(zipcode)}>
+		{ #if filteredData.length > 0 }
+			<button class="load-more" id="load-more" alt="Show More Results" type="submit" on:click={loadMore(zipcode)}>
 				Show More Results
 			</button>
 		{ /if }
@@ -180,6 +195,9 @@
 </main>
 
 <style>
+main {
+	padding-bottom: 1rem;
+}
 .header {
 	display: flex;
 }
@@ -249,6 +267,7 @@
 	color: #FFFFFF;
 	border: none;
 	width: 95%;
+	cursor: pointer;
 }
 .results {
 	
@@ -286,6 +305,7 @@
     margin-left: auto;
     margin-right: auto;
 	margin-bottom: 1rem;
+	cursor: pointer;
 }
   
 @media (min-width: 600px) {
@@ -515,7 +535,7 @@
 	margin-bottom: 1rem;
 }
 }
-@media (min-width: 1200px) {
+@media (min-width: 1200px) and (max-width: 1920px) {
 .header {
 	display: flex;
 }
@@ -635,8 +655,5 @@
     margin-left: 2rem;
 	margin-bottom: 1rem;
 }
-}
-@media (min-width: 1800px) {
-
 }
 </style>
